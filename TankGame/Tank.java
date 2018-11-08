@@ -2,6 +2,7 @@ package TankGame;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -20,11 +21,13 @@ public class Tank extends GameObject {
     private int vx;
     private int vy;
     private int angle;
-    private int shoot, damage;
+    private int shoot;
+    private int damage;
+    private int i = 0;
 
     private BufferedImage bulletImg;
     private ArrayList<Bullet> myBulletList;
-
+    private Bullet bullet;
 
     private final int R = 2;
     private final int ROTATIONSPEED = 4;
@@ -38,18 +41,18 @@ public class Tank extends GameObject {
     private boolean LeftPressed;
     private boolean EnterPressed;
 
-   Tank(BufferedImage img, int life, int damage, int x, int y, int vx, int vy, int angle, int shoot) {
+   Tank(BufferedImage img, int health, int damage, int x, int y, int vx, int vy, int angle, int shoot) {
 
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
-        this.damage = damage;
+       // this.damage = damage;
         this.img = img;
+        this.bullet = bullet;
         this.angle = angle;
-        this.shoot = shoot;
+       // this.shoot = shoot;
         this.myBulletList = new ArrayList<Bullet>();
-
         try{
             bulletImg = read(new File("Resources/Shell.gif"));
         }catch(Exception e){
@@ -62,21 +65,7 @@ public class Tank extends GameObject {
        return this.damage;
     }
 
-    public ArrayList<Bullet> getMyBulletList(){
-        return myBulletList;
-    }
-
-    private void shoot(){
-        Bullet blt;
-        blt = new Bullet(bulletImg, x,y, vy, vx, angle, damage, Xspeed,Yspeed);
-        myBulletList.add(blt);
-        System.out.println("Fire\n");
-        checkBorder();
-
-
-    }
-
-
+    /*Toggles*/
     void toggleUpPressed() {
         this.UpPressed = true;
     }
@@ -96,7 +85,7 @@ public class Tank extends GameObject {
     void toogleEnterPressed(){this.EnterPressed = true;}
 
 
-
+    /*Untoggles*/
     void unToggleUpPressed() {
         this.UpPressed = false;
     }
@@ -131,11 +120,51 @@ public class Tank extends GameObject {
         }
         if(this.EnterPressed){
             this.shoot();
+
         }
 
     }
 
+    /**
+     * Creates a rectangle health bar that is fixed with the tank
+     * The health bar follows the tank around.*/
+    public void tankHealth(Graphics2D g2){
+        int health = 0;
+        int maxHealth = 100;
+        double hp = 0.0;
+        double maxHP = 100.0;
 
+        g2.setColor(Color.blue);
+        g2.fill(new Rectangle2D.Double(x-30, y+50, 60,10));
+
+    }
+
+    /**
+     * This section has all the actions of the tank
+     * @return
+     */
+    public ArrayList<Bullet> getMyBulletList(){
+        return this.myBulletList;
+    }
+
+
+    private void shoot(){
+        if(i == 0 && i%50 == 0) {
+            Bullet blt;
+            blt = new Bullet(bulletImg, x , y, angle, 0, vx, vy);
+            myBulletList.add(blt);
+            System.out.println("Fire\n" + getMyBulletList().size());
+            // checkBorder();
+        }else{
+            i = 0;
+        }
+    }
+    public int getX(){
+        return vx;
+    }
+    public int getY(){
+        return vy;
+    }
 
     private void rotateLeft() {
         this.angle -= this.ROTATIONSPEED;
@@ -160,9 +189,6 @@ public class Tank extends GameObject {
         y += vy;
         checkBorder();
     }
-
-
-
 
     private void checkBorder() {
         if (x < 30) {
