@@ -95,6 +95,9 @@ public class TankControl implements KeyListener {
         if (keyPressed == d) {
             this.t2.toggleRightPressed();
         }
+        if(keyPressed == f){
+            this.t2.toogleEnterPressed();
+        }
 
     }
 
@@ -134,6 +137,9 @@ public class TankControl implements KeyListener {
         }
         if (keyReleased  == d) {
             this.t2.unToggleRightPressed();
+        }
+        if(keyReleased == f){
+            this.t2.unToggleEnterPressed();
         }
 
     }
