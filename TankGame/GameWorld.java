@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static javax.imageio.ImageIO.read;
 
@@ -21,23 +20,23 @@ import static javax.imageio.ImageIO.read;
  */
 public class GameWorld extends JPanel  {
 
-    int w = 640, h = 480;
+    public static int w , h ;
+    public static final int WORLD_WIDTH = 1280;
+    public static final int WORLD_HEIGHT = 960;
     public static final int SCREEN_WIDTH = 1280;
     public static final int SCREEN_HEIGHT = 960;
     public static final int TILE_SIZE = 1280/80;    //Used for building walls
     private Bullet blt;
+    private Image bulletImage;
     private BufferedImage world;
     private Graphics2D buffer;
-    Graphics2D g2;
     private JFrame jf;
     private Tank t1;
     private Tank t2;
     private Image background;
-    private Graphics2D bullet;
     private Image borderWall;                       //Wall Image
     int move = 0;
-
-    static ArrayList<Bullet> bullet1 = new ArrayList<Bullet>(100);
+    int speed = 1;
 
 
     public static void main(String[] args) {
@@ -48,7 +47,13 @@ public class GameWorld extends JPanel  {
 
             while (true) {
                 trex.t1.update();
+                for(int i = 0; i < trex.t1.getMyBulletList().size(); i++){
+                    trex.t1.getMyBulletList().get(i).update(trex.t1.getX(),trex.t1.getY());
+                }
                 trex.t2.update();
+                for(int i = 0; i < trex.t2.getMyBulletList().size(); i++){
+                    trex.t2.getMyBulletList().get(i).update(trex.t2.getX(),trex.t2.getY());
+                }
                     trex.repaint();
                     System.out.println(trex.t1);
                     // System.out.println(trex.t2);
@@ -75,7 +80,6 @@ public class GameWorld extends JPanel  {
             t1img = read(new File("tank1.png"));
             background = read(new File("Resources/Background.bmp"));
             borderWall = read(new File("Resources/Wall1.gif"));                 //Wall source file
-            bulletImg = read(new File("Resources/Shell.gif"));
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -86,6 +90,7 @@ public class GameWorld extends JPanel  {
         //
         t1 = new Tank(t1img,0, 0, 250, 200, 0, 0, 0, 0);//Tank.Tank 1 starting position
         t2 = new Tank(t1img, 0, 0, 100, 150, 0, 0, 0, 0);//Tank.Tank 2 starting position
+
 
         //
         //TankControl tc1 handles all the control keys
@@ -100,7 +105,7 @@ public class GameWorld extends JPanel  {
 
 
         this.jf.addKeyListener(tc1);
-      // this.jf.addKeyListener(tc2);
+        //this.jf.addKeyListener(tc2);
 
 
         this.jf.setSize(GameWorld.SCREEN_WIDTH, GameWorld.SCREEN_HEIGHT + 30);
@@ -108,6 +113,7 @@ public class GameWorld extends JPanel  {
         jf.setLocationRelativeTo(null);
 
         this.jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         this.jf.setVisible(true);
 
 
@@ -116,16 +122,19 @@ public class GameWorld extends JPanel  {
     @Override
     public void paintComponent(Graphics g) {
         background.getGraphics();
-
         Graphics2D g2 = (Graphics2D) g;
         buffer = world.createGraphics();
+
         super.paintComponent(g2);
+
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
+
         g2.drawImage(world,0,0,null);
-        drawBG();
-        drawBullet();
-       drawBorderWalls();
+        t1.tankHealth(g2);
+        t2.tankHealth(g2);
+        drawGame();
+
     }
     /**
     *This draws the background for the entire map
@@ -144,23 +153,35 @@ public class GameWorld extends JPanel  {
                         TileHeight, this);
             }
         }
-        //move += speed;
+       // move += speed;
     }
 
     /**
-     * This section draws (calls) the final background
-     * and also gets the bullet list for the tank.
-     * It should also draw the bullet.
+     * This section draws Background and Bullets
      */
-    public void drawBG(){
+    public void drawGame(){
         drawBackGroundWithTileImage();
+        drawBullet();
+
         }
 
 
     public void drawBullet() {
+
+        /**
+         * Bullet For Tank 1*/
         for (int i = 0; i < t1.getMyBulletList().size(); i++) {
-            this.t1.getMyBulletList().get(i).drawBullet(buffer);
+            this.t1.getMyBulletList().get(i).drawImage(buffer);
             this.t1.getMyBulletList().get(i).update(t1.getX(), t1.getY());
+
+        }
+
+        /**
+         * Bullet For Tank 2*/
+        for (int i = 0; i < t2.getMyBulletList().size(); i++) {
+            this.t2.getMyBulletList().get(i).drawImage(buffer);
+            this.t2.getMyBulletList().get(i).update(t2.getX(), t2.getY());
+
         }
     }
 
