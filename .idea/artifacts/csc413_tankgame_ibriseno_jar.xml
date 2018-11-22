@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="csc413-tankgame-ibriseno:jar">
+    <output-path>$PROJECT_DIR$/../IntelliJ Compiler Output/artifacts/csc413_tankgame_ibriseno_jar</output-path>
+    <root id="archive" name="csc413-tankgame-ibriseno.jar">
+      <element id="module-output" name="csc413-tankgame-ibriseno" />
+    </root>
+  </artifact>
+</component>
