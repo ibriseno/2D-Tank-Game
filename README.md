@@ -68,5 +68,5 @@ One computer threw a Java Runtime file class error, which said that the file cla
 used was a higher class than it could recognize.
 
 Second computer ran fine with no Runtime error but it throws a null pointer exception. I've scanned the code for any file reading errors
-on the resources but everything seems fine. I could not fine any spelling errors or anything that would't let the file load. When ran with 
+on the resources but everything seems fine. I could not find any spelling errors or anything that would not let the file load. When ran with 
 the IDE instead of the jar the game works fine with no problems. 
