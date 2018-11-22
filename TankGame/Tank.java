@@ -1,10 +1,12 @@
 package TankGame;
 
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static javax.imageio.ImageIO.read;
@@ -13,26 +15,38 @@ import static javax.imageio.ImageIO.read;
  *
  * @author
  */
-public class Tank extends GameObject {
+public class Tank extends GameWorld{
 
 
     private int x;
     private int y;
+    private int tankHealth = 60;
+    private int addHealth = 0;
+    private int damage = 6;
+    private int tankLives = 3;
+
     private int vx;
     private int vy;
     private int angle;
-    private int shoot;
-    private int damage;
     private int i = 0;
+    private int counter = 0;
 
     private BufferedImage bulletImg;
-    private ArrayList<Bullet> myBulletList;
+    private BufferedImage rocketImg;
+
+    private ArrayList<Bullet> myBulletList = new ArrayList<>();
+    private ArrayList<Bullet> powerList = new ArrayList<>();
+    private ArrayList<Bullet> powerList2 = new ArrayList<>();
     private Bullet bullet;
+
+    private MapWalls mapWalls;
+    private Collision tankCollision = new Collision();
 
     private final int R = 2;
     private final int ROTATIONSPEED = 4;
-
-
+    private final int fireRate = 50;
+    private static boolean power;
+    private static boolean power2;
 
     private BufferedImage img;
     private boolean UpPressed;
@@ -40,23 +54,21 @@ public class Tank extends GameObject {
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean EnterPressed;
+    private boolean Ypressed;
 
-   Tank(BufferedImage img, int health, int damage, int x, int y, int vx, int vy, int angle, int shoot) {
+   Tank(BufferedImage img, int x, int y, int vx, int vy, int angle) {
 
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
-       // this.damage = damage;
-        this.img = img;
-        this.bullet = bullet;
         this.angle = angle;
-       // this.shoot = shoot;
-        this.myBulletList = new ArrayList<Bullet>();
+        this.img = img;
         try{
-            bulletImg = read(new File("Resources/Shell.gif"));
+            bulletImg = read(new File("Resources/Shell.png"));
+            rocketImg = read(new File("Resources/Rocket.png"));
         }catch(Exception e){
-            System.out.println("Exception in PlayerTank1");
+
         }
 
     }
@@ -68,43 +80,60 @@ public class Tank extends GameObject {
     /*Toggles*/
     void toggleUpPressed() {
         this.UpPressed = true;
+
     }
 
     void toggleDownPressed() {
         this.DownPressed = true;
+
     }
 
     void toggleRightPressed() {
         this.RightPressed = true;
+
     }
 
     void toggleLeftPressed() {
         this.LeftPressed = true;
+
     }
 
-    void toogleEnterPressed(){this.EnterPressed = true;}
+    void toogleEnterPressed(){
+        this.EnterPressed = true;
+    }
+
+    void toggleYPressed(){
+        this.Ypressed = true;
+    }
 
 
     /*Untoggles*/
     void unToggleUpPressed() {
         this.UpPressed = false;
+
     }
 
     void unToggleDownPressed() {
         this.DownPressed = false;
+
     }
 
     void unToggleRightPressed() {
         this.RightPressed = false;
+
     }
 
     void unToggleLeftPressed() {
         this.LeftPressed = false;
+
     }
 
     void unToggleEnterPressed(){this.EnterPressed = false;}
+    void unToggleYPressed(){this.Ypressed = false;}
 
     public void update() {
+
+
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -118,25 +147,94 @@ public class Tank extends GameObject {
         if (this.RightPressed) {
             this.rotateRight();
         }
-        if(this.EnterPressed){
-            this.shoot();
+        if(this.EnterPressed) {
+            //i++;
+            if (i % fireRate == 0) {
+                this.shoot();
+            }
+            i++;
+
 
         }
+        for (int i = 0; i < getMyBulletList().size(); i++){
+            getMyBulletList().get(i).update();
+//            tankCollison.bulletVSgamewall(t2.getBulletlist().get(i), t2, i);
+//            tankCollison.bulletVSgamewall(t1.getBulletlist().get(i), t1, i);
+        }
+        for (int i = 0; i < getMyBulletList().size(); i++){
+            getMyBulletList().get(i).update();
+//            tankCollison.bulletVSgamewall(t2.getBulletlist().get(i), t2, i);
+//            tankCollison.bulletVSgamewall(t1.getBulletlist().get(i), t1, i);
+        }
 
+        for (int i = 0; i < getPowerList().size(); ++i){
+            getPowerList().get(i).update();
+//            tankCollison.bulletVSgamewall(t2.getPowerList().get(i), t2, i);
+//            tankCollison.bulletVSgamewall(t1.getPowerList().get(i), t1, i);
+        }
+
+        for (int i = 0; i < getPowerList().size(); ++i){
+            getPowerList().get(i).update();
+//            tankCollison.bulletVSgamewall(t2.getPowerList().get(i), t2, i);
+//            tankCollison.bulletVSgamewall(t1.getPowerList().get(i), t1, i);
+        }
     }
 
-    /**
-     * Creates a rectangle health bar that is fixed with the tank
-     * The health bar follows the tank around.*/
-    public void tankHealth(Graphics2D g2){
-        int health = 0;
-        int maxHealth = 100;
-        double hp = 0.0;
-        double maxHP = 100.0;
+    public void hit(boolean isHit, int damage){
+        if (isHit){
+            try {
+                int i = 0;
 
-        g2.setColor(Color.blue);
-        g2.fill(new Rectangle2D.Double(x-30, y+50, 60,10));
+                while(i < 50){
+                  //  img = read(new File("Resources/Explosion_small.png"));
+                    i++;
+                }
+                tankHealth -= damage;
+                if(tankLives == 3){
+                    if(tankHealth == 0 ){
+                        tankHealth = 60;
+                        tankLives -= 1;
+                    }
+                }
+                if(tankLives == 2){
+                    if(tankHealth == 0 ){
+                        tankHealth = 60;
+                        tankLives -= 1;
+                    }
+                }
+                if(tankLives == 1){
+                    if(tankHealth == 0 ){
+                        tankHealth = 60;
+                        tankLives -= 1;
+                    }
+                }
+                if(tankLives == 0){
+                    if(tankHealth == 0 ){
+                        tankHealth = 60;
+                    }
+                }
+                img = read(new File("tank1.png"));
 
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void getHealth(boolean isHealth) {
+        if (isHealth) {
+           // int i = 0;
+            if (((tankHealth-damage) | (tankHealth + addHealth)) >= 60) {
+                addHealth = 0;
+                tankHealth -=damage;
+            }
+            if ((tankHealth-damage) <= 54) {
+                addHealth += 6;
+                tankHealth += addHealth;
+                System.out.println("Added +6 Health! " + tankHealth);
+            }
+
+        }
     }
 
     /**
@@ -147,23 +245,50 @@ public class Tank extends GameObject {
         return this.myBulletList;
     }
 
+    public void setPower(boolean isPower){
+        power = isPower;
+    }
 
-    private void shoot(){
-        if(i == 0 && i%50 == 0) {
-            Bullet blt;
-            blt = new Bullet(bulletImg, x , y, angle, 0, vx, vy);
-            myBulletList.add(blt);
-            System.out.println("Fire\n" + getMyBulletList().size());
-            // checkBorder();
-        }else{
-            i = 0;
+
+    public void shoot() {
+        if (power && counter < 5){
+            Bullet powerBullet;
+            powerBullet = new Bullet(rocketImg,x,y, angle,20, 0, 0);
+
+                powerList.add(powerBullet);
+                System.out.println("Power Bullet Count Tank 1: " + GameWorld.t1.powerList.size());
+
+                powerList2.add(powerBullet);
+                System.out.println("Power Bullet Count Tank 2: " + GameWorld.t2.powerList2.size());
+         
+            counter++;
         }
+        else {
+            power = false;
+            Bullet newbullet;
+            newbullet = new Bullet(bulletImg,x+8,y+8, angle,6, 0, 0);
+            myBulletList.add(newbullet);
+        }
+
     }
+
+    public ArrayList<Bullet> getPowerList(){return powerList;}
+    public ArrayList<Bullet> getPowerList2(){return powerList2;}
+
     public int getX(){
-        return vx;
+        return x;
     }
+
+
     public int getY(){
-        return vy;
+        return y;
+    }
+
+    public int getWidth(){
+        return this.img.getWidth();
+    }
+    public int getHeight(){
+        return this.img.getHeight();
     }
 
     private void rotateLeft() {
@@ -179,7 +304,7 @@ public class Tank extends GameObject {
         vy = (int) Math.round(R * Math.sin(Math.toRadians(angle)));
         x -= vx;
         y -= vy;
-        checkBorder();
+        checkWorldBorder();
     }
 
     private void moveForwards() {
@@ -187,21 +312,37 @@ public class Tank extends GameObject {
         vy = (int) Math.round(R * Math.sin(Math.toRadians(angle)));
         x += vx;
         y += vy;
-        checkBorder();
+        checkWorldBorder();
     }
 
-    private void checkBorder() {
-        if (x < 30) {
-            x = 30;
+    private void checkWorldBorder(){
+        if (x < 0) {
+         //   x = 30;
         }
-        if (x >= GameWorld.SCREEN_WIDTH - 88) {
-            x = GameWorld.SCREEN_WIDTH - 88;
+        if (x >= GameWorld.WORLD_WIDTH - 88) {
+            x = GameWorld.WORLD_WIDTH - 88 ;
         }
-        if (y < 40) {
-            y = 40;
+        if (y < 0) {
+        //    y = 40;
         }
-        if (y >= GameWorld.SCREEN_HEIGHT - 80) {
-            y = GameWorld.SCREEN_HEIGHT - 80;
+        if (y >= GameWorld.WORLD_HEIGHT - 80) {
+            y = GameWorld.WORLD_HEIGHT - 80 ;
+        }
+    }
+
+    public void Collision( boolean isXCollidable, boolean isYCollidable, boolean rightCollidable, boolean leftCollidable, int pos){
+
+        if (isXCollidable){
+            x = pos - getWidth();
+        }
+        if (isYCollidable){
+            y = pos - getHeight();
+        }
+        if (rightCollidable){
+            y = pos;
+        }
+        if (leftCollidable){
+            x = pos;
         }
     }
 
@@ -214,15 +355,76 @@ public class Tank extends GameObject {
      * This should be used to load up the health bar for the tanks.
      * @param g
      */
-    void drawImage(Graphics g) {
-
+    void drawImage(Graphics2D g) {
          AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
-         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
+         rotation.rotate(Math.toRadians(angle), this.img.getWidth()/2.0 , this.img.getHeight()/2.0);
          Graphics2D g2d = (Graphics2D) g;
          g2d.drawImage(this.img, rotation, null);
 
+         g.setColor(Color.blue);
+         g.drawRect(this.x, this. y, img.getWidth(),img.getHeight());
+/**
+ *Life counter for Tanks
+ */
+
+             if (tankLives == 3) {
+                 g.setColor(Color.blue);
+                 g.fill(new Rectangle2D.Double(x + 30, y + 70, 10, 10));
+                 g.setColor(Color.blue);
+                 g.fill(new Rectangle2D.Double(x + 50, y + 70, 10, 10));
+                 g.setColor(Color.blue);
+                 g.fill(new Rectangle2D.Double(x + 70, y + 70, 10, 10));
+             }
+                 if(tankLives == 2) {
+                     g.setColor(Color.blue);
+                     g.fill(new Rectangle2D.Double(x + 30, y + 70, 10, 10));
+                     g.setColor(Color.blue);
+                     g.fill(new Rectangle2D.Double(x + 50, y + 70, 10, 10));
+                 }
+                if(tankLives == 1) {
+                    g.setColor(Color.blue);
+                    g.fill(new Rectangle2D.Double(x + 30, y + 70, 10, 10));
+                }
+                if(tankLives == 0) {
+                    try {
+                        img = read(new File("Resources/Explosion_large.png"));
+                        if(GameWorld.t1.tankLives == 0 && tankHealth != 0){
+                            String msg = "Game Over! Player 2 Wins!";
+                            Font small = new Font("Helvetica", Font.BOLD, 100);
+                            FontMetrics metr = getFontMetrics(small);
+                            g.setColor(Color.white);
+                            g.setFont(small);
+                            g.drawString(msg, (SCREEN_WIDTH - metr.stringWidth(msg))+ 300 ,SCREEN_HEIGHT/2);
+                            GameWorld.t1.startGame(false);
+                        }
+                        else if(GameWorld.t2.tankLives == 0 && tankHealth != 0){
+                            String msg = "Game Over! Player 1 Wins!";
+                            Font small = new Font("Helvetica", Font.BOLD, 100);
+                            FontMetrics metr = getFontMetrics(small);
+                            g.setColor(Color.white);
+                            g.setFont(small);
+                            g.drawString(msg, (SCREEN_WIDTH - metr.stringWidth(msg)) + 300 ,SCREEN_HEIGHT/2);
+                            GameWorld.t2.startGame(false);
+
+                        }
+
+
+                    //    GameWorld.t1.restartGame(g);
+                    //    GameWorld.t2.restartGame(g);
+                    }catch(IOException e){
+
+                        g.setColor(Color.green);
+                        g.fill(new Rectangle2D.Double(x +30,y + 50, tankHealth ,10));
+                    }
+
+                }else {
+                    g.setColor(Color.green);
+                    g.fill(new Rectangle2D.Double(x + 30, y + 50, tankHealth, 10));
+                }
+
+         }
 
 
     }
 
-}
+

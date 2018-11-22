@@ -33,22 +33,25 @@ public class TankControl implements KeyListener {
 
 
 
-    public TankControl(TankGame.Tank t1, Tank t2, int up, int down, int left, int right, int shoot, int w, int s, int a, int d, int f) {
+
+
+    public TankControl(Tank tank, int up, int down, int left, int right, int shoot) {
         //Controls for tank 1
-        this.t1 = t1;
+        this.t1 = tank;
         this.up = up;
         this.down = down;
         this.right = right;
         this.left = left;
         this.shoot = shoot;
 
+
         //Controls for tank 2
-        this.t2 = t2;
-        this.w = w;
-        this.s = s;
-        this.a = a;
-        this.d = d;
-        this.f = f;
+        this.t2 = tank;
+        this.w = up;
+        this.s = down;
+        this.a = left;
+        this.d = right;
+        this.f = shoot;
 
     }
 
@@ -79,6 +82,7 @@ public class TankControl implements KeyListener {
         if(keyPressed == shoot){
             this.t1.toogleEnterPressed();
         }
+
 
 
 
@@ -121,6 +125,7 @@ public class TankControl implements KeyListener {
         if(keyReleased == shoot){
             this.t1.unToggleEnterPressed();
         }
+
 
 
 

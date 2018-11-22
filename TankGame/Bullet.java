@@ -23,19 +23,20 @@ public class Bullet  {
         this.vx = vx;
         this.vy = vy;
         this.img = img;
+        this.damage = damage;
         this.Xspeed = Xspeed;
         this.Yspeed = Yspeed;
         this.angle = angle;
 
     }
 
-    /**
-     * The update keeps the bullet on a straight path
-     * depending on the angle of the tank.
-     * @param w
-     * @param h
-     */
-    public void update(int w, int h){
+    public int getDamage(){return damage;}
+    public int getX(){return x;}
+    public int getY(){return y;}
+    public int getWidth(){return img.getWidth();}
+    public int getHeight(){return img.getHeight();}
+
+    public void update(){
         vx = (int) Math.round((R * Math.cos(Math.toRadians(angle))));
         vy = (int) Math.round((R * Math.sin(Math.toRadians(angle))));
         x += vx;
@@ -47,7 +48,7 @@ public class Bullet  {
             AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
             AffineTransform shoot = AffineTransform.getTranslateInstance(x, y);
 
-            shoot.rotate(Math.toRadians(angle), this.img.getWidth()/2.0, this.img.getHeight()/2.0);
+            shoot.rotate(Math.toRadians(angle), (int)this.img.getWidth()/6.0, (int)this.img.getHeight()/6.0);
 
             Graphics2D b2d = (Graphics2D) g;
             b2d.drawImage(this.img, shoot, null);
