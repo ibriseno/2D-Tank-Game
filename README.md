@@ -1,7 +1,6 @@
 # csc413-TankGame
 
 ## Student Name : Ivan Briseno
-## Student ID : 915090454
 
 
 TankGame Game
