@@ -1,8 +1,4 @@
-# csc413-TankGame
-
-## Student Name : Ivan Briseno
-
-
+# TankGame
 TankGame Game
 
 --------------Controls------------
@@ -53,8 +49,6 @@ Going over these potions will give a health boost to the player.
 -------------Compiler Used-----------
 IntelliJ IDEA 2018.2.2 (Ultimate Edition)
 Build #IU-182.4129.33, built on August 21, 2018
-Licensed to Ivan Briseno
-Subscription is active until September 4, 2019
 JRE: 1.8.0_152-release-1248-b8 amd64
 JVM: OpenJDK 64-Bit Server VM by JetBrains s.r.o
 Windows 10 10.0
